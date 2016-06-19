@@ -4,6 +4,7 @@ from copy import copy
 
 from de import *
 from geneticToolBox import *
+from scipy.stats import gaussian_kde
 
 class MultiEA(object):
 
@@ -36,7 +37,7 @@ class MultiEA(object):
 						x = range(len(y))
 						A = np.vstack([x, np.ones(len(x))]).T
 						s, t = np.linalg.lstsq(A, y)[0]
-						sample.append(s * (t_nearest * 1. / self.EA2PopNum.values[i] - j) + t)
+						sample.append(s * (t_nearest * 1. / self.EA2PopNum.values()[i] - j) + t)
 
 					kernal = gaussian_kde(sample)
 					pf[i] = kernal.resample(1)[0, 0]
@@ -56,16 +57,15 @@ class MultiEA(object):
 	def initEAs(self):
 		self.EAs = []
 		self.EA2PopNum = {
-			'CMAES': 14,
-			'OBDE': 50,
-			'SOUPDE': 50
+			'CMAES': 4 + int(np.floor(3 * np.log(self.dimNum))),
+			'SPSO2011': 40,
 		}
 		self.NumEA = len(self.EA2PopNum)
 		self.t = np.zeros(self.NumEA).astype('int')
 		self.m = self.EA2PopNum.values()
 		self.popNum = sum(self.m)
 		for name, num in self.EA2PopNum.items():
-			exec("EA = %s(num, self.dimNum, self.problemID, self.budget, self.safeEvaluate,self.problemID,  self.safeGetEvaluations)" % (name))
+			exec("EA = %s(num, self.dimNum, self.problemID, self.budget, self.safeEvaluate, self.safeGetEvaluations)" % (name))
 			self.EAs.append(EA)
 
 	def initParams(self):
@@ -358,6 +358,8 @@ class CMAES(EA):
 		self.invsqrtC 	= np.dot(np.dot(self.B, np.diag(self.D.flatten()**-1)), self.B.T)
 		self.eigeneval 	= 0 # B and D updated at counteval == 0
 		self.chiN 		= self.dimNum**0.5 * (1 - 1./ (4 * self.dimNum) + 1./(21 * (self.dimNum**2))) #expectation of ||N(0, I)|| == norm(randn(N, 1))
+
+		self.optimizeOneIter()
 
 
 class SOUPDE(EA):

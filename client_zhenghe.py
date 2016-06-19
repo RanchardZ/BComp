@@ -47,7 +47,8 @@ print
 LOGFILEPATH = 'logs/'
 USERNAME = 'hezheng'
 PASSWORD = 'hezheng562'
-TRACKNAME = 'trial'
+TRACKNAME = 'BBComp2016-1OBJ'
+# TRACKNAME = 'BBComp2016-1OBJ-expensive'
 LOGIN_DELAY_SECONDS = 10
 LOCK_DELAY_SECONDS = 60
 
@@ -145,7 +146,8 @@ def solveProblem(problemID):
 	# optimizor = SOUPDE(40, dim, problemID, bud, safeEvaluate, safeGetEvaluations)	
 	# optimizor = jDE(40, dim, problemID, bud, safeEvaluate, safeGetEvaluations)	
 	# optimizor = DZAdaptiveDE(40, dim, problemID, bud, safeEvaluate, safeGetEvaluations)	
-	optimizor = SPSO2011(40, dim, problemID, bud, safeEvaluate, safeGetEvaluations)	
+	# optimizor = SPSO2011(40, dim, problemID, bud, safeEvaluate, safeGetEvaluations)	
+	optimizor = MultiEA(40, dim, problemID, bud, safeEvaluate, safeGetEvaluations)
 	optimizor.optimize()
 
 # setup
